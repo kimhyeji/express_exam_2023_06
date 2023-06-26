@@ -8,11 +8,15 @@ app.get("/", (req, res) => {
 });
 
 app.get("/about", (req, res) => {
-  res.send("About!!");
+  res.send("About!!!@@!#!@##");
 });
 
 app.get("/projects", (req, res) => {
   res.send("projects!!");
+});
+
+app.get("/settings", (req, res) => {
+  res.send("settings!!");
 });
 
 app.listen(port, () => {
