@@ -97,7 +97,7 @@ app.patch("/music_list/:id", async (req, res) => {
     `
     UPDATE music_list
     SET title = ?,
-    singer = ?
+    singer = ?a
     WHERE id = ?
     `,
     [title, singer, id]
@@ -107,6 +107,30 @@ app.patch("/music_list/:id", async (req, res) => {
     id,
     title,
     singer,
+  });
+});
+
+app.delete("/music_list/:id", async (req, res) => {
+  const { id } = req.params;
+
+  const [rows] = await pool.query("SELECT * FROM music_list WHERE id = ?", [
+    id,
+  ]);
+
+  if (rows.length == 0) {
+    res.status(404).send("not found");
+  }
+
+  const [rs] = await pool.query(
+    `
+    DELETE FROM music_list
+    WHERE id = ?
+    `,
+    [id]
+  );
+
+  res.status(200).json({
+    id,
   });
 });
 
