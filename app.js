@@ -67,6 +67,49 @@ app.post("/music_list", async (req, res) => {
   });
 });
 
+app.patch("/music_list/:id", async (req, res) => {
+  const { id } = req.params;
+  const { title, singer } = req.body;
+
+  const [rows] = await pool.query("SELECT * FROM music_list WHERE id = ?", [
+    id,
+  ]);
+
+  if (rows.length == 0) {
+    res.status(404).send("not found");
+  }
+
+  if (!title) {
+    res.status(404).json({
+      msg: "title required",
+    });
+    return;
+  }
+
+  if (!singer) {
+    res.status(404).json({
+      msg: "singer required",
+    });
+    return;
+  }
+
+  const [rs] = await pool.query(
+    `
+    UPDATE music_list
+    SET title = ?,
+    singer = ?
+    WHERE id = ?
+    `,
+    [title, singer, id]
+  );
+
+  res.status(200).json({
+    id,
+    title,
+    singer,
+  });
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
