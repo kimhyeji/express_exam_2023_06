@@ -12,18 +12,8 @@ const pool = mysql.createPool({
 });
 
 const app = express();
+app.use(express.json());
 const port = 3000;
-
-const musicList = [
-  {
-    title: "ditto",
-    singer: "뉴진스",
-  },
-  {
-    title: "Butter",
-    singer: "BTS",
-  },
-];
 
 app.get("/music_list", async (req, res) => {
   const [rows] = await pool.query("SELECT * FROM music_list ORDER BY id DESC");
@@ -43,6 +33,38 @@ app.get("/music_list/:id", async (req, res) => {
   }
 
   res.json(rows[0]);
+});
+
+app.post("/music_list", async (req, res) => {
+  const { title, singer } = req.body;
+
+  if (!title) {
+    res.status(404).json({
+      msg: "title required",
+    });
+    return;
+  }
+
+  if (!singer) {
+    res.status(404).json({
+      msg: "singer required",
+    });
+    return;
+  }
+
+  const [rs] = await pool.query(
+    `
+    INSERT INTO music_list
+    SET regDate = NOW(),
+    title = ?,
+    singer = ?
+    `,
+    [title, singer]
+  );
+
+  res.status(201).json({
+    id: rs.insertId,
+  });
 });
 
 app.listen(port, () => {
